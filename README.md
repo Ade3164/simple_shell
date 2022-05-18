@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 0x16. C - Simple Shell
  By Julien Barbier
@@ -468,3 +469,6 @@ Repo:
 GitHub repository: simple_shell
   
 Copyright © 2022 ALX, All rights reserved.
+=======
+Read me
+>>>>>>> 6655efd0b70cc3f33260e0b3cba8b8895a9f8295
