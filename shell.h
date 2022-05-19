@@ -1,71 +1,46 @@
-#ifndef SHELL_H
-#define SHELL_H
+#ifndef SHELL
+#define SHELL
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <dirent.h>
+#include <stddef.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
-#include <errno.h>
-#include <signal.h>
-
+#define TOKENS_BUFFER_SIZE 64
+#define LINE_SIZE 1024
+#define TOKEN_DELIMITERS " \t\r\n\a"
+extern char **environ;
 /**
- * struct list - path directory list structure.
- * @dir: directory path.
- * @next: pointer to next directory node.
+ * struct builtins - Has builtins and associated funcs
+ * @arg: Builtins name
+ * @builtin: Mathcing builtin func
  */
-typedef struct list
+typedef struct builtins
 {
-	char *dir;
-	struct list *next;
-} list_t;
-
-/* main.c */
-int start_shell(list_t *path, char **env, char *program_name, int mode);
-int execute_buffer(char *buffer, list_t *path, char **env, char *program_name);
-int execute_command(char *new_buffer, list_t *path, char **env,
-			int final, char *program_name);
-int execute_fork(char **input, char *program_name);
-
-/* env-list.c */
-list_t *list_path(char **env);
-list_t *create_list(char **environ);
-list_t *add_list(list_t **head, char *dir);
-void free_list(list_t *head);
-
-/* dmemory.c */
-char *get_path(char *buffer, list_t **path);
-char *aux_get_path(list_t *list_pointer,
-	char *slash_command, char *slash_input, char *input);
-char *clean_spaces(char *buffer);
-char **create_argv(char *input_buffer, list_t **path);
-void free_argv(char **argv);
-
-/* built-ins.c */
-char *clean_comments(char *buffer);
-int check_builtin(char *command);
-int check_syntax(char *buffer);
-int builtins(char **input, char **env);
-void print_help(char **input);
-
-/* strings-1.c */
-int str_len(char *s);
-char *str_cpy(char *dest, char *src);
-char *str_dup(char *str);
-char *str_cat(char *dest, char *src);
-char *str_con(char *s1, char *s2);
-
-/* strings-2.c */
-int not_empty(char *input_buffer);
-int str_twins(char *s1, char *s2);
-int str_count(char *buffer, char c);
-char *str_tr(char *buffer, char old_char, char new_char);
-
-/* errors.c */
-void ctrl_c(__attribute__((unused)) int x);
-void print_error(char *program_name, char *input, int error_num);
-
+	char *arg;
+	void (*builtin)(char **args, char *line, char **env);
+} builtins_t;
+void shell(int ac, char **av, char **env);
+char *_getline(void);
+char **split_line(char *line);
+int execute_prog(char **args, char *line, char **env, int flow);
+int check_for_builtins(char **args, char *line, char **env);
+int launch_prog(char **args);
+void exit_shell(char **args, char *line, char **env);
+void env_shell(char **args, char *line, char **env);
+int _strcmp(char *s1, char *s2);
+char *find_path(char *args, char *tmp, char *er);
+char *search_cwd(char *filename, char *er);
+int bridge(char *check, char **args);
+void prompt(void);
+int builtins_checker(char **args);
+char *save_path(char *tmp, char *path);
+char *read_dir(char *er, struct dirent *s, char *fi, int l, char *p, char *t);
+char *_getenv(char *env);
+char *_strstr(char *haystack, char *needle);
+int _strlen(char *s);
 #endif
